@@ -4,7 +4,7 @@ import "math/rand"
 import "time"
 import "fmt"
 
-type fn func([]int) []int
+type fn func([]int)
 
 func make_int_array(number int) []int {
 	rand.Seed(int64(time.Now().Nanosecond()))
@@ -18,6 +18,6 @@ func make_int_array(number int) []int {
 func result_helper(f fn, name string, input []int) {
 	fmt.Printf("Name: %s\nInput: %v\n", name, input)
 	now := time.Now()
-	result := f(input)
-	fmt.Printf("Result %v\nTook: %s\n", result, time.Since(now))
+	f(input)
+	fmt.Printf("Result %v\nTook: %s\n", input, time.Since(now))
 }
