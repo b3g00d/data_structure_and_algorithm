@@ -1,5 +1,7 @@
 package main
 
+import "sync"
+
 func partition(arr []int, low int, high int) int {
 	pivot := arr[low]
 	last_min := low
@@ -17,11 +19,19 @@ func partition(arr []int, low int, high int) int {
 func quick_sort(arr []int, low int, high int) {
 	if len(arr) > 1 {
 		if low < high {
+			var wg sync.WaitGroup
+			wg.Add(2)
 			pi := partition(arr, low, high)
-				
-			quick_sort(arr, low, pi-1)
-			quick_sort(arr, pi+1, high)
-
+			
+			go func() {
+				defer wg.Done()
+				quick_sort(arr, low, pi-1)
+			}()
+			go func() {
+				defer wg.Done()
+				quick_sort(arr, pi+1, high)
+			}()
+			wg.Wait()
 		}
 	}
 }
@@ -34,5 +44,5 @@ func quick_sort_helper(arr []int) {
 
 func main() {
 	new_arr := make_int_array(10000000)
-	result_helper(quick_sort_helper, "Quick Sort", new_arr)
+	result_helper(quick_sort_helper, "Quick Sort Parallel", new_arr)
 }
