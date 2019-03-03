@@ -14,17 +14,26 @@ class Graph(object):
             for e in v.edges:
                 print("Edges {} {}".format(e.value, e.weight))
 
-    def dfs(self, vertex, beggin=True):
-        if beggin:
-            self.paths = []
+    def dfs(self, vertex):
         self.paths.append(vertex.value)
         vertex.visited = True
         for v in  vertex.edges:
             if not v.visited:
-                self.dfs(v, False)
+                self.dfs(v)
 
-    def bfs(self, vertex):
-        pass
+    def bfs(self, vertex, beggin=True):
+        queue = []
+
+        vertex.visited = True
+        queue.append(vertex)
+
+        while queue:
+            v = queue.pop(0)
+            self.paths.append(v.value)
+            for e in v.edges:
+                if not e.visited:
+                    e.visited = True
+                    queue.append(e)
 
     def bds(self, v_start, v_end):
         pass
@@ -32,6 +41,7 @@ class Graph(object):
     def clear(self):
         for v in self.vertexs:
             v.visited = False
+        self.paths = []
 
 
 
@@ -71,5 +81,10 @@ if __name__ == "__main__":
 
     graph.visual()
 
+    graph.clear()
     graph.dfs(v2)
+    print(graph.paths)
+
+    graph.clear()
+    graph.bfs(v3)
     print(graph.paths)
