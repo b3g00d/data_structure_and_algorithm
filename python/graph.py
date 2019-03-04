@@ -21,8 +21,9 @@ class Graph(object):
             if not v.visited:
                 self.dfs(v)
 
-    def bfs(self, vertex, beggin=True):
-        queue = []
+    def bfs(self, vertex, queue=None, beggin=True):
+        if beggin or queue == None:
+            queue = []
 
         vertex.visited = True
         queue.append(vertex)
@@ -35,8 +36,61 @@ class Graph(object):
                     e.visited = True
                     queue.append(e)
 
+    def is_visited(self, s_visited, e_visited):
+        for v in self.vertexs:
+            if (v.value in s_visited) and (v.value in e_visited):
+                return v
+
+        return None
+
+    def bds_bfs(self, vertex, queue, visited, parent):
+        v = queue.pop(0)
+        for e in v.edges:
+            if e.value not in visited:
+                visited.append(e.value)
+                parent[e.value] = v
+                queue.append(e)
+
+    def print_Path(self, s_parent, e_parent, v_start, v_end, match):
+        self.paths.append(match)
+        tmp = match
+
+        while tmp != v_start:
+            self.paths.append(s_parent[tmp.value])
+            tmp = s_parent[tmp.value]
+
+        self.paths.reverse()
+        tmp = match
+
+        while tmp != v_end:
+            self.paths.append(e_parent[tmp.value])
+            tmp = e_parent[tmp.value]
+
+        print(" -> ".join([str(v.value) for v in self.paths]))
+
     def bds(self, v_start, v_end):
-        pass
+        s_queue = []
+        e_queue = []
+        s_visited = []
+        e_visited = []
+
+        s_parent = {}
+        e_parent = {}
+
+        s_queue.append(v_start)
+        s_visited.append(v_start.value)
+
+        e_queue.append(v_end)
+        e_visited.append(v_end.value)
+
+        while s_queue and e_queue:
+            self.bds_bfs(v_start, s_queue, s_visited, s_parent)
+            self.bds_bfs(v_end, e_queue, e_visited, e_parent)
+            # print(s_visited, e_visited)
+            result = self.is_visited(s_visited, e_visited)
+            if result:
+                self.print_Path(s_parent, e_parent, v_start, v_end, result)
+                break
 
     def clear(self):
         for v in self.vertexs:
@@ -55,6 +109,7 @@ class Vertex(object):
 
     def add(self, obj):
         self.edges.append(obj)
+        obj.edges.append(self)
 
 
 if __name__ == "__main__":
@@ -88,3 +143,6 @@ if __name__ == "__main__":
     graph.clear()
     graph.bfs(v3)
     print(graph.paths)
+
+    graph.clear()
+    graph.bds(v1, v5)
